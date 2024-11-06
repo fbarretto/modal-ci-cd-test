@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install modal
 
-      - name: Deploy job
-        run: |
-            modal deploy --env=sandbox project-a/endpoint-a.py
-            modal deploy --env=sandbox project-b/endpoint-b.py
+
+      - name: Check and Deploy Changed Endpoints
+        run: ./deploy_endpoints.sh
+        shell: bash
