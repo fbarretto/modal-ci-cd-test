@@ -29,5 +29,5 @@ jobs:
 
       - name: Deploy job
         run: |
-          modal deploy project-a/endpoint-a.py
-          modal deploy project-a/endpoint-b.py
+          modal deploy --env=sandbox project-a/endpoint-a.py
+          modal deploy --env=sandbox project-a/endpoint-b.py
