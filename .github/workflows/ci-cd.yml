@@ -27,6 +27,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install modal
 
+      - name: Make Deploy Script Executable
+        run: chmod +x deploy_endpoints.sh
 
       - name: Check and Deploy Changed Endpoints
         run: ./deploy_endpoints.sh
