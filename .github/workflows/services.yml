@@ -1,0 +1,47 @@
+name: Service Deployment
+
+on:
+  repository_dispatch:
+    types:
+      - service_updated
+
+jobs:
+  deploy_project_a:
+    if: github.event.client_payload.service_name == 'project-a'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Modal
+        run: |
+          python -m pip install --upgrade pip
+          pip install modal
+
+      - name: Deploy Project A Endpoint
+        run: modal deploy --env=sandbox project-a/endpoint-a.py
+
+  deploy_project_b:
+    if: github.event.client_payload.service_name == 'project-b'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Modal
+        run: |
+          python -m pip install --upgrade pip
+          pip install modal
+
+      - name: Deploy Project B Endpoint
+        run: modal deploy --env=sandbox project-b/endpoint-b.py
