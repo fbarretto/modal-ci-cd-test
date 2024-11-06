@@ -45,7 +45,7 @@ app = modal.App(name="endpoint-a", image=image)
     docs=True  # adds interactive documentation in the browser
 )
 def hello():
-    return "Hello world! Ab"
+    return "Hello world! A"
 
 
 # You can turn this function into a web endpoint by running `modal serve basic_web.py`.
