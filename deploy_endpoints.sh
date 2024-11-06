@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Fetch the latest changes on the main branch
-git fetch origin main
+git fetch origin main --depth=2
 
 # Check for changes in project-a directory
 if [ $(git diff HEAD~ --name-only --relative=project-a | wc -l) -gt 0 ]; then
