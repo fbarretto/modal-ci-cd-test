@@ -1,4 +1,4 @@
-name: Main Workflow
+name: CI/CD
 
 on:
   push:
@@ -6,49 +6,30 @@ on:
       - main
 
 jobs:
-  detect-changes:
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI
-        run: |
-          sudo apt-get install -y gh
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-      - name: Check for Changes in Project A
-        id: project_a_changes
+      - name: Install Modal
         run: |
-          git fetch origin main
-          if git diff --name-only origin/main -- 'project-a/*' | grep -q '.'; then
-            echo "project-a changed"
-            echo "changed=true" >> $GITHUB_ENV
-            echo "service_name=project-a" >> $GITHUB_ENV
-          else
-            echo "changed=false" >> $GITHUB_ENV
-          fi
-          
-      - name: Dispatch Event for Project A
-        if: env.changed == 'true'
-        run: |
-          gh api repos/${{ github.repository }}/dispatches \
-            -F event_type=service_updated \
-            -F client_payload='{"service_name": "project-a"}'
+          python -m pip install --upgrade pip
+          pip install modal
 
-      - name: Check for Changes in Project B
-        id: project_b_changes
-        run: |
-          if git diff --name-only origin/main -- 'project-b/*' | grep -q '.'; then
-            echo "project-b changed"
-            echo "changed=true" >> $GITHUB_ENV
-            echo "service_name=project-b" >> $GITHUB_ENV
-          else
-            echo "changed=false" >> $GITHUB_ENV
-          fi
-          
-      - name: Dispatch Event for Project B
-        if: env.changed == 'true'
-        run: |
-          gh api repos/${{ github.repository }}/dispatches \
-            -F event_type=service_updated \
-            -F client_payload='{"service_name": "project-b"}'
+      - name: Make Deploy Script Executable
+        run: chmod +x deploy_endpoints.sh
+
+      - name: Check and Deploy Changed Endpoints
+        run: ./deploy_endpoints.sh
+        shell: bash
