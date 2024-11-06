@@ -27,9 +27,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install modal
 
-      - name: Make Deploy Script Executable
-        run: chmod +x deploy_endpoints.sh
+      - name: Check for Changes in Project A
+        id: project_a_changes
+        run: |
+          git fetch origin main
+          git diff --name-only origin/main -- 'project-a/*' > project_a_changes.txt
+        continue-on-error: true
 
-      - name: Check and Deploy Changed Endpoints
-        run: ./deploy_endpoints.sh
-        shell: bash
+      - name: Check for Changes in Project B
+        id: project_b_changes
+        run: |
+          git fetch origin main
+          git diff --name-only origin/main -- 'project-b/*' > project_b_changes.txt
+        continue-on-error: true
+
+      - name: Deploy Project A Endpoint
+        if: ${{ steps.project_a_changes.outputs.changed != '' }}
+        run: |
+          echo "Changes detected in project-a. Deploying endpoint-a.py..."
+          modal deploy --env=sandbox project-a/endpoint-a.py
+
+      - name: Deploy Project B Endpoint
+        if: ${{ steps.project_b_changes.outputs.changed != '' }}
+        run: |
+          echo "Changes detected in project-b. Deploying endpoint-b.py..."
+          modal deploy --env=sandbox project-b/endpoint-b.py
