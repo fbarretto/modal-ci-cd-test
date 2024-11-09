@@ -31,5 +31,5 @@ jobs:
         run: chmod +x deploy_endpoints.sh
 
       - name: Check and Deploy Changed Endpoints
-        run: ./deploy_endpoints.sh
+        run: ./deploy_endpoints.sh ${{ github.ref_name }}
         shell: bash
