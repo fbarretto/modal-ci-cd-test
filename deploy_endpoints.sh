@@ -25,13 +25,16 @@ for dir in src/*/; do
     dir_name=${dir##*/}
     
     # Check for changes in the directory
+    echo "Checking for changes in $dir_name..."
     if [ $(git diff HEAD~ --name-only --relative=$dir | wc -l) -gt 0 ]; then
+        echo "Changes detected in $dir_name."
         deploy_file=$(find $dir -maxdepth 1 -name "deploy*.py" | head -n 1)
         if [ -z "$deploy_file" ]; then
             echo "Error: No deploy file found in $dir_name. Skipping deployment."
             continue
         fi
-        echo "Changes detected in $dir_name. Deploying $deploy_file..."
+        echo "Deploy file found: $deploy_file"
+        echo "Deploying $deploy_file with environment $BRANCH_NAME and tag $COMMIT_HASH..."
         modal deploy --env=$BRANCH_NAME --tag=$COMMIT_HASH $deploy_file
     else
         echo "No changes detected in $dir_name. Skipping deployment for $dir_name."
