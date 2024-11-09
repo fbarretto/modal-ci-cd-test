@@ -31,7 +31,7 @@ for dir in src/*/; do
         deploy_file=$(find $dir -maxdepth 1 -name "deploy*.py" | head -n 1)
         if [ -z "$deploy_file" ]; then
             echo "Error: No deploy file found in $dir_name. Skipping deployment."
-            continue
+            exit 1
         fi
         echo "Deploy file found: $deploy_file"
         echo "Deploying $deploy_file with environment $BRANCH_NAME and tag $COMMIT_HASH..."
